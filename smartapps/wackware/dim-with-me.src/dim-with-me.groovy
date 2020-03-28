@@ -60,13 +60,7 @@ preferences {
 			required: true
 	}
 
-	section("Then these will follow with on/off...") {
-		input "slaves2", "capability.switch", 
-			multiple: true, 
-			title: "Slave On/Off Switch(es)...", 
-			required: false
-	}
-    
+
 	section("And these will follow with dimming level...") {
 		input "slaves", "capability.switchLevel", 
 			multiple: true, 
@@ -79,7 +73,7 @@ def installed()
 {
 	subscribe(masters, "switch.on", switchOnHandler)
 	subscribe(masters, "switch.off", switchOffHandler)
-	subscribe(masters, "switch.setLevel", switchSetLevelHandler)
+	subscribe(masters, "level", switchSetLevelHandler)
 	subscribe(masters, "switch", switchSetLevelHandler)
 }
 
@@ -88,14 +82,14 @@ def updated()
 	unsubscribe()
 	subscribe(masters, "switch.on", switchOnHandler)
 	subscribe(masters, "switch.off", switchOffHandler)
-	subscribe(masters, "switch.setLevel", switchSetLevelHandler)
+	subscribe(masters, "level", switchSetLevelHandler)
 	subscribe(masters, "switch", switchSetLevelHandler)
 	log.info "subscribed to all of switches events"
 }
 
 def switchSetLevelHandler(evt)
 {	
-	
+	log.info "HIII"
 	if ((evt.value == "on") || (evt.value == "off" ))
 		return
 	def level = evt.value.toFloat()
@@ -107,12 +101,11 @@ def switchSetLevelHandler(evt)
 def switchOffHandler(evt) {
 	log.info "switchoffHandler Event: ${evt.value}"
 	slaves?.off()
-	slaves2?.off()
+
 }
 
 def switchOnHandler(evt) {
 	log.info "switchOnHandler Event: ${evt.value}"
 	def dimmerValue = masters.latestValue("level") //can be turned on by setting the level
 	slaves?.on()
-	slaves2?.on()
 }
